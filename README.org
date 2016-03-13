@@ -1,0 +1,37 @@
+* GNU Radio RX and decoder for a "Thermo-/Hygrosender TFA 30.3180.IT"
+
+This repository contains a GNU Radio receiver, a perl decoder and some
+notes I wrote for the wireless thermometer/hygrometer available at
+[[http://www.pollin.de/shop/dt/NTI0OTYxOTk-/Haustechnik/Wetterstationen_Thermometer/Thermo_Hygrosender_TFA_30_3180_IT_868_MHz.html][Pollin 830574]].
+
+** receiver
+- 868.3 MHz
+- OOK, symbol rate 156 kHz
+
+** bit fiddling
+bitstream matches the regular expression:
+: (?:01){10}1101111(.{168})1(?:01){20}0{10}
+: ^-sync prefix    ^-payload ^-suffix
+
+The payload has every second bit set to 1.  Removing them, the
+following message remains:
+
+: 010000101011100100001110101101100001000101000001010000000110000011110110101010111100
+: cccccccccccciiiiiiiiiiiiiiiiaaaabbbbccccddddHHHHHHHHccccccccccccNNNNccccccccSSSSSSSS
+: ^-constant  ^-hex digits    |   |   |   |   |       ^-constant  |   |       ^-checksum
+:               of ID sticker |   |   |   |   ^-humidity, binary  |   ^-constant
+:                             ^---^---^---^--temp, bcd digits     ^-transmission counter
+
+The following function yields the value from the sensor display.  I
+have no idea what the perpetual ^ in digit b means…
+
+: t(a,c,d) = (a-4)*10 + d + c*0.1 °C
+
+** decoder invocation
+
+The perl script expects 0 and 1 characters while the GRC-generated
+code emits bytes \000 and \001 in the bitstream.  You can invoke the
+decoder like this to overcome the impedance mismatch:
+
+: tr \\000\\001 01 bitstream | perl klimalogg.pl
+
