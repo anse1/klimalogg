@@ -1,12 +1,12 @@
 * GNU Radio RX and decoder for a "Thermo-/Hygrosender TFA 30.3180.IT"
 
-This repository contains a GNU Radio receiver, a perl decoder and some
-notes I wrote for the wireless thermometer/hygrometer available at
-[[http://www.pollin.de/shop/dt/NTI0OTYxOTk-/Haustechnik/Wetterstationen_Thermometer/Thermo_Hygrosender_TFA_30_3180_IT_868_MHz.html][Pollin 830574]].
+This repository contains a [[http://gnuradio.org][GNU Radio]] Companion flowchart, a perl
+decoder and some notes I wrote for receiving the signals of a wireless
+thermometer/hygrometer [[http://www.pollin.de/shop/dt/NTI0OTYxOTk-/Haustechnik/Wetterstationen_Thermometer/Thermo_Hygrosender_TFA_30_3180_IT_868_MHz.html][TFA KLIMALOGG PRO 30.3039.IT]].
 
 ** receiver
 - 868.3 MHz
-- OOK, symbol rate 156 kHz
+- OOK, symbol rate about 85 kHz
 
 ** bit fiddling
 bitstream matches the regular expression:
@@ -23,7 +23,7 @@ following message remains:
 :                             ^---^---^---^--temp, bcd digits     ^-transmission counter
 
 The following function yields the value from the sensor display.  I
-have no idea what the perpetual ^ in digit b means…
+have no idea what the perpetual 1 in digit b means…
 
 : t(a,c,d) = (a-4)*10 + d + c*0.1 °C
 
