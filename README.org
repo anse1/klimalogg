@@ -8,8 +8,10 @@ thermometer/hygrometer [[http://www.pollin.de/shop/dt/NTI0OTYxOTk-/Haustechnik/W
 - 868.3 MHz
 - OOK, symbol rate about 85 kHz
 
+[[klimalogg.png]]
+
 ** bit fiddling
-bitstream matches the regular expression:
+The messages from the sensor match the following regular expression:
 : (?:01){10}1101111(.{168})1(?:01){20}0{10}
 : ^-sync prefix    ^-payload ^-suffix
 
@@ -20,10 +22,11 @@ following message remains:
 : cccccccccccciiiiiiiiiiiiiiiiaaaabbbbccccddddHHHHHHHHccccccccccccNNNNccccccccSSSSSSSS
 : ^-constant  ^-hex digits    |   |   |   |   |       ^-constant  |   |       ^-checksum
 :               of ID sticker |   |   |   |   ^-humidity, binary  |   ^-constant
-:                             ^---^---^---^--temp, bcd digits     ^-transmission counter
+:                             ^---^---^---^--temperature, BCD     ^-transmission counter
 
-The following function yields the value from the sensor display.  I
-have no idea what the perpetual 1 in digit b means…
+All numbers are sent LSB first.  The following function yields the
+value from the sensor display.  I have no idea what the perpetual 8 in
+digit b means…
 
 : t(a,c,d) = (a-4)*10 + d + c*0.1 °C
 
@@ -35,3 +38,7 @@ decoder like this to overcome the impedance mismatch:
 
 : tr \\000\\001 01 bitstream | perl klimalogg.pl
 
+** known bugs
+- Clock recovery fails on every second telegram
+- AGC stage is missing
+- DC removal currently implemented with an AddConst block
