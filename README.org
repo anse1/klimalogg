@@ -36,7 +36,12 @@ The perl script expects 0 and 1 characters while the GRC-generated
 code emits bytes \000 and \001 in the bitstream.  You can invoke the
 decoder like this to overcome the impedance mismatch:
 
-: tr \\000\\001 01 bitstream | perl klimalogg.pl
+: $ tr \\000\\001 01  bitstream | perl klimalogg/klimalogg.pl
+: decoded: hygro=45% temp=22.4°C count=0 id=d709 sum=91 unk=60 bcd1=8 prefix=d42
+: decoded: hygro=45% temp=22.4°C count=2 id=d709 sum=4d unk=60 bcd1=8 prefix=d42
+: decoded: hygro=45% temp=22.4°C count=3 id=d709 sum=23 unk=60 bcd1=8 prefix=d42
+: decoded: hygro=44% temp=22.4°C count=4 id=d709 sum=83 unk=60 bcd1=8 prefix=d42
+
 
 ** known bugs
 - Clock recovery fails on every second telegram
