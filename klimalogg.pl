@@ -25,10 +25,10 @@ while(<>) {
 	next unless defined($count);
 	    
 #	print $telegram . "\n";
-	print "decoded: hygro=" . bin2dec(reverse("$hygro"));
+	print "decoded: hygro=" . bin2dec(reverse("$hygro")) . "%";
 	my $temp = (bin2dec(reverse("$bcd0")) - 4) * 10 +
 	    (bin2dec(reverse("$bcd3"))) + 0.1 * (bin2dec(reverse("$bcd2")));
-	printf " temp=%02.1f"	, $temp;
+	printf " temp=%02.1f°C"	, $temp;
 	printf " count=%x"	, bin2dec(reverse("$count"));
 	printf " id=%x"		, bin2dec(reverse("$id"));
 	printf " sum=%02x"	, bin2dec(reverse("$sum"));
