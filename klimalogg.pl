@@ -9,7 +9,7 @@ while(<>) {
 	$telegram =~ s/1([01])/$1/g;
 
 	my ($prefix, $id, $bcd0, $bcd1, $bcd2, $bcd3, $hygro,
-	     $unk, $count, $sum) = 
+	     $unk, $count, $sum) =
 	    $telegram =~ m/^([01]{12}) # prefix
                            ([01]{16})  # id
                            ([01]{4})   # bcd0
@@ -23,7 +23,7 @@ while(<>) {
                            ([01]{8})   # sum/x;
 
 	next unless defined($count);
-	    
+
 #	print $telegram . "\n";
 	print "decoded: hygro=" . bin2dec(reverse("$hygro")) . "%";
 	my $temp = (bin2dec(reverse("$bcd0")) - 4) * 10 +
