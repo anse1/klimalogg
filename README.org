@@ -33,8 +33,8 @@ digit b means…
 ** decoder invocation
 
 [[klimalogg.pl]] listens on UDP port 35000, decodes the incoming bits and
-stores them in a postgres database.  It expects the following the
-table to be present:
+stores them in a postgres database.  It expects the following table to
+be present:
 
 : create table klimalogg(t timestamptz default now(), hygro int2, temp float, raw bit varying);
 : create index on klimalogg using brin (t);
