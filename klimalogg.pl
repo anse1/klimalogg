@@ -1,11 +1,27 @@
 #!/usr/bin/perl -w
 
+use strict;
+use IO::Socket;
+use DBI;
+use DBD::Pg;
+
+my $dbh = DBI->connect("dbi:Pg:dbname=sensors");
+$dbh->do("set application_name to 'klimalogg.pl'");
+
+my $sth = $dbh->prepare('INSERT INTO klimalogg(hygro, temp, raw) VALUES (?,?,?)');
+my $server = IO::Socket::INET->new(LocalPort => 35000,
+                                Proto     => "udp")
+    or die "Couldn't be a UDP server: $@\n";
+
 sub bin2dec ($){
     return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
 }
 
-while(<>) {
-    foreach my$telegram (/(?:01){10}1101111(.{168})1(?:01){20}0{10}/g) {
+while (my$sender = $server->recv($_, 1500)) {
+    y/\x00\x01/01/;
+    print STDERR "$_\n";
+    
+    foreach my$telegram (/(?:01){5,10}1101111(.{168})1(?:01){20}0{10}/g) {
 	$telegram =~ s/1([01])/$1/g;
 
 	my ($prefix, $id, $bcd0, $bcd1, $bcd2, $bcd3, $hygro,
@@ -36,5 +52,10 @@ while(<>) {
 	printf " bcd1=%x"	, bin2dec(reverse("$bcd1"));
 	printf " prefix=%x"	, bin2dec(reverse("$prefix"));
 	print "\n";
+
+	$sth->execute(bin2dec(reverse("$hygro")), $temp, $telegram)
     }
 }
+
+
+

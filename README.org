@@ -32,16 +32,12 @@ digit b means…
 
 ** decoder invocation
 
-The perl script expects 0 and 1 characters while the GRC-generated
-code emits bytes \000 and \001 in the bitstream.  You can invoke the
-decoder like this to overcome the impedance mismatch:
+[[klimalogg.pl]] listens on UDP port 35000, decodes the incoming bits and
+stores them in a postgres database.  It expects the following the
+table to be present:
 
-: $ tr \\000\\001 01  bitstream | perl klimalogg/klimalogg.pl
-: decoded: hygro=45% temp=22.4°C count=0 id=d709 sum=91 unk=60 bcd1=8 prefix=d42
-: decoded: hygro=45% temp=22.4°C count=2 id=d709 sum=4d unk=60 bcd1=8 prefix=d42
-: decoded: hygro=45% temp=22.4°C count=3 id=d709 sum=23 unk=60 bcd1=8 prefix=d42
-: decoded: hygro=44% temp=22.4°C count=4 id=d709 sum=83 unk=60 bcd1=8 prefix=d42
-
+: create table klimalogg(t timestamptz default now(), hygro int2, temp float, raw bit varying);
+: create index on klimalogg using brin (t);
 
 ** known bugs
 - Clock recovery fails on every second telegram
